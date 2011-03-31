@@ -1,7 +1,7 @@
 from repository import *
 import shutil
 
-class subtitleOrganizer:
+class subtitleOrganizer(object):
     def __init__(self,subRep,movRep):
         self.subtitleRepository = Repository(subRep)
         self.movieRepository = TVRepository(movRep)

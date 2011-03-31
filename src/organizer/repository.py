@@ -4,7 +4,7 @@ import re
 from criterion import *
 
 
-class Repository():
+class Repository(object):
     """
     Repository
     A representation of a directory.

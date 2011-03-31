@@ -1,6 +1,6 @@
 import re
 
-class Criterion:
+class Criterion(object):
     """
     an abstract object that returns a score based on abitrary criteria applied to two strings
     """
