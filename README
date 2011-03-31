@@ -1,3 +1,18 @@
-This code was written by Ben Noel
+The goal of this program is to download subtitle files for Tv shows, rename them and move them to their proper locations.
+It is written in an object oriented style that should lend to easy modification for other file sorting tasks
 
-I'm just posting this so that he has some version control.
+This program makes a number of assumptions:
+1. The tv shows are stored into separate directories under one directory.
+2. The directories are named for what they store (offthemap holds the show 'off the map')
+3. Tv shows have their season and episode number in their filename in either of the following formats: s##e## or ##x## (new formats can be added in TvSeasonEpisodeCriterion.__init__() )
+4. the subtitle files are stored in a specific directory (indicated in head.py)
+5. 2011-3-31: You are using Windows (Repository._highscore() makes this assumption and can be easily edited) (this assumption will be elimininated)
+
+
+Current State: 2011-3-31
+The program can be run by executing head.py
+The names of the subtitle and tv repositories are named in head.py
+No download functionality
+
+
+Ben
