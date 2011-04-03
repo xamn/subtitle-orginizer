@@ -11,6 +11,7 @@ class Repository(object):
     can return a score based similarity of a string to a directory or file
 
     """
+
     def __init__(self,dirname): #opportunistic, only get the root directory.  Create sub repositories only as needed.
         for root, dirs, files in os.walk(dirname):
             self.rootDir = root
@@ -18,8 +19,8 @@ class Repository(object):
             self.fileList = files
             break #only remember the root directory
         self.repositories = dict()
-        self.dircriteria = [] #list of criteria to apply to matching directories
-        self.filecriteria = [] #list of criteria to apply to matching files
+       # self.dircriteria = Repository._classDirCriteria #list of criteria to apply to matching directories
+       # self.filecriteria = Repository._classFileCriteria #list of criteria to apply to matching files
     
     #generators
     def iterOverFiles(self):
@@ -31,6 +32,41 @@ class Repository(object):
             yield dirname
     #end generators 
     
+        #privates
+    def _isTerminal(self):
+        return (self.dirList == [])
+    
+    def _addChildRepo(self,repDir):
+        self.repositories[repDir] = Repository(repDir)
+    
+    def _getChildRepo(self,theKey):
+        try:
+            return self.repositories[theKey]
+        except:
+            return None
+        
+    def _hasRepository(self,repDir):
+        try:
+            self.repositories[repDir]
+        except:
+            return False
+        
+        return True    
+    #end privates
+    
+class QueryableRepository(Repository):
+    """
+    a base class for a repository that can be queried versus criteria
+    """
+    
+    _classDirCriteria = []
+    _classFileCriteria = []
+    def __init__(self,dirname):
+        super(QueryableRepository, self).__init__(dirname)
+        self.dircriteria = TVRepository._classDirCriteria
+        self.filecriteria = TVRepository._classFileCriteria
+        
+        
     #publics
     def placeFile(self,theFile):
         """
@@ -64,27 +100,8 @@ class Repository(object):
  
     #end publics
     
-    #privates
-    def _isTerminal(self):
-        return (self.dirList == [])
-    
     def _addChildRepo(self,repDir):
-        self.repositories[repDir] = Repository(repDir)
-    
-    def _getChildRepo(self,theKey):
-        try:
-            return self.repositories[theKey]
-        except:
-            return None
-        
-    def _hasRepository(self,repDir):
-        try:
-            self.repositories[repDir]
-        except:
-            return False
-        
-        return True    
-    #end privates
+        self.repositories[repDir] = QueryableRepository(repDir)
     
     #private query methods
     def _queryList(self,query,theList,criteria,retTuple=False):
@@ -108,7 +125,7 @@ class Repository(object):
                 elif aList[0] == 'match': #score is 'match' this is the match no further processing required FUTURE
                     return self._highscore([aList],retTuple)
                 else: #continue scoring
-                    aList[0] = criterion.score(lquery,aList[1].lower())
+                    aList[0] += criterion.score(lquery,aList[1].lower())
                    
         return self._highscore(masterList,retTuple)
         
@@ -138,16 +155,20 @@ class Repository(object):
                 aList[0] = 0 #no match
     #end query methods
     
-class TVRepository(Repository):
+class TVRepository(QueryableRepository):
     """
-    subclass that sets the match criteria to TV files
-    FUTURE make the criteria class variables
+    subclass that sets the match criteria to TV file
     """
+    #add criteria to the class as these are standard.  No need to make new ones with each instance
+    _classDirCriteria = [ExactSimilarCriterion()]
+    _classFileCriteria = _classDirCriteria + [TvSeasonEpisodeCriterion()]
+    
     def __init__(self,dirname):
         super(TVRepository, self).__init__(dirname)
-        criteria = ExactSimilarCriterion()
-        self.dircriteria = [criteria]
-        self.filecriteria = [TvSeasonEpisodeCriterion(),criteria]
+        #copy class variables into the instance.  to facilitate manipulation of criteria...if ever desired
+        self.dircriteria = TVRepository._classDirCriteria
+        self.filecriteria = TVRepository._classFileCriteria
+        
         
     def _addChildRepo(self,repDir):
         self.repositories[repDir] = TVRepository(repDir)
