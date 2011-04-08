@@ -125,8 +125,12 @@ class QueryableRepository(Repository):
                 elif aList[0] == 'match': #score is 'match' this is the match no further processing required FUTURE
                     return self._highscore([aList],retTuple)
                 else: #continue scoring
-                    aList[0] += criterion.score(lquery,aList[1].lower())
-                   
+                    response = criterion.score(lquery,aList[1].lower())
+                    try:
+                        aList[0] += response
+                    except TypeError: #not an integer, just assign
+                        aList[0] = response
+                  
         return self._highscore(masterList,retTuple)
         
     def _highscore(self,masterList,retTuple=False):
@@ -142,8 +146,9 @@ class QueryableRepository(Repository):
         else:
             if retTuple: 
                 return (self.rootDir,masterList[-1][1])
-            else: 
-                return ''.join([self.rootDir,masterList[-1][1],'\\']) # equivalent to: self.Rootdir + masterList[-1][1] + '\\'
+            else:
+                return os.path.join(self.rootDir,masterList[-1][1])
+               # return ''.join([self.rootDir,masterList[-1][1],'\\']) # equivalent to: self.Rootdir + masterList[-1][1] + '\\'
         return None   
     
     def _removeKills(self,masterList):

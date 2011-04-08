@@ -1,5 +1,6 @@
 from repository import *
 import shutil
+import os.path
 
 class subtitleOrganizer(object):
     def __init__(self,subRep,movRep):
@@ -26,4 +27,4 @@ class subtitleOrganizer(object):
         """
         newName = destFile[:-3] + 'srt'
 
-        shutil.move(sourceDir + sourceFile,destDir + newName) 
+        shutil.move(os.path.join(sourceDir, sourceFile),os.path.join(destDir,newName)) 
