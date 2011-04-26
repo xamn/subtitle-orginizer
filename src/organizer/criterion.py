@@ -124,6 +124,21 @@ class TvSeasonEpisodeCriterion(Criterion):
             return 'kill'
         
         return 0 #patterns were found and matched
+      
+
+class IdentityKillCriterion(Criterion):
+    """
+    a criterion that kills EXACT matches
+    useful for when files should not match themselves
+    such as when query and target files reside in the same
+    repository
+    """
+    
         
+    def _assess(self,query,target):
+        if query == target:
+            return 'kill'
+        return 0
+       
         
     

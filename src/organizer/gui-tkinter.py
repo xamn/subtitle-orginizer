@@ -11,16 +11,15 @@ class theGui(Frame):
     def organizeRepository(self):
         
         #remove, even though repository exists contents may have changed
-        if not self.organizer \
-           or self.subRepository != self.subBox.get() \
-           or self.movieShack != self.tvBox.get():
+        #if not self.organizer \
+        #   or self.subRepository != self.subBox.get() \
+        #   or self.movieShack != self.tvBox.get():
             self.subRepository = self.subBox.get()
             self.movieShack = self.tvBox.get()
             try:
                 self.organizer = subtitleOrganizer(self.subRepository,self.movieShack)
-            except OSError:
-                #message box here
-                raise
+            except OSError as detail:
+                showerror("Organize Error", detail)
             else:
                 self.organizer.organize()
     
@@ -29,10 +28,8 @@ class theGui(Frame):
         self.movieShack = self.tvBox.get()
         try:
             self.organizer = subtitleOrganizer(self.movieShack,self.movieShack)
-        except OSError:
-            print('oh no')
-            #message box here
-            raise
+        except OSError as detail:
+            showerror("Organize Error", detail)
         else:
             self.organizer.organizeRep()
 

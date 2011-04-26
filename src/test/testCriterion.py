@@ -32,6 +32,19 @@ class TestCriterion(unittest.TestCase):
         query = r'The.Big.Bang.Theory.s01e03.srt'
         target = r'The.big.bang.theory.s01e02.720p.DIMENSION.mkv'
         self.assertEqual('kill', criterion._assess(query, target))
+    
+    def testIdentityKillCriterionMatch(self):
+        criterion = IdentityKillCriterion()
+        query = r'The.big.bang.theory.s01e02.720p.DIMENSION.mkv'
+        target = r'The.big.bang.theory.s01e02.720p.DIMENSION.mkv'
+        self.assertEqual('kill', criterion._assess(query, target))
+
+    def testIdentityKillCriterionMismatch(self):
+        criterion = IdentityKillCriterion()
+        query = r'The.Big.Bang.Theory.s01e03.srt'
+        target = r'The.big.bang.theory.s01e02.720p.DIMENSION.mkv'
+        self.assertEqual(0, criterion._assess(query, target))
+
 
         
         

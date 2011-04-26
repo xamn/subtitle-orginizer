@@ -11,9 +11,8 @@ class Repository(object):
     can return a score based similarity of a string to a directory or file
 
     """
-
     def __init__(self,dirname): #opportunistic, only get the root directory.  Create sub repositories only as needed.
-        for root, dirs, files in os.walk(dirname):
+        for root, dirs, files in os.walk(dirname,onerror=self.handleBadDir):
             self.rootDir = root
             self.dirList = dirs
             self.fileList = files
@@ -22,10 +21,20 @@ class Repository(object):
        # self.dircriteria = Repository._classDirCriteria #list of criteria to apply to matching directories
        # self.filecriteria = Repository._classFileCriteria #list of criteria to apply to matching files
     
+    def handleBadDir(self,theException):
+        """
+        reraises the osError from os.walk in __init__()
+        """
+        raise theException
+    
     #generators
-    def iterOverFiles(self):
+    def iterOverFiles(self,extFilter=None):
         for filename in self.fileList:
-            yield filename
+            if extFilter:
+                if filename.endswith(extFilter):
+                    yield filename
+            else:
+                yield filename
     
     def iterOverDirs(self):
         for dirname in self.dirList:
@@ -166,7 +175,7 @@ class TVRepository(QueryableRepository):
     """
     #add criteria to the class as these are standard.  No need to make new ones with each instance
     _classDirCriteria = [ExactSimilarCriterion()]
-    _classFileCriteria = _classDirCriteria + [TvSeasonEpisodeCriterion()]
+    _classFileCriteria = [IdentityKillCriterion()] + _classDirCriteria + [TvSeasonEpisodeCriterion()]
     
     def __init__(self,dirname):
         super(TVRepository, self).__init__(dirname)
